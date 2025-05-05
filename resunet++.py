@@ -56,4 +56,33 @@ class ResUnetPlusPlus(nn.Module):
     def forward(self, x):
         x1 = self.input_layer(x) + self.input_skip(x)
 
+        x2 = self.squeeze_excite1(x1)
+        x2 = self.residual_conv1(x2)
+
+        x3 = self.squeeze_excite2(x2)
+        x3 = self.residual_conv2(x3)
+
+        x4 = self.squeeze_excite3(x3)
+        x4 = self.residual_conv3(x4)
+
+        x5 = self.aspp_bridge(x4)
+
+        x6 = self.attn1(x3, x5)
+        x6 = self.upsample1(x6)
+        x6 = torch.cat([x6, x3], dim=1)
+        x6 = self.up_residual_conv1(x6)
+
+        x7 = self.attn2(x2, x6)
+        x7 = self.upsample2(x7)
+        x7 = torch.cat([x7, x2], dim=1)
+        x7 = self.up_residual_conv2(x7)
+
+        x8 = self.attn3(x1, x7)
+        x8 = self.upsample3(x8)
+        x8 = torch.cat([x8, x1], dim=1)
+        x8 = self.up_residual_conv3(x8)
+
+        x9 = self.aspp_out(x8)
+        out = self.output_layer(x9)
+
         
