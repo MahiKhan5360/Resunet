@@ -85,4 +85,4 @@ class ResUnetPlusPlus(nn.Module):
         x9 = self.aspp_out(x8)
         out = self.output_layer(x9)
 
-        
+        return out
